@@ -6,11 +6,11 @@
 
 using namespace std;
 
-void FIFO(int data[][3]) {
+void FIFO(int data[][3], int size) {
   int i;
   int j;
 
-  for (i = 0; i < 3; i++) {
+  for (i = 0; i < size; i++) {
     for (j = 0; j < 3; j++) {
       cout << data[i][j] << " ";
     }
@@ -20,7 +20,7 @@ void FIFO(int data[][3]) {
 
 int main()
 {
-  int data[3][3];
+  int data[MAX][3];
   int i = 0;
   int j = 0;
   ifstream in("jobs.txt");
@@ -32,7 +32,7 @@ int main()
 
       // Parse each line using the input string stream
       j = 0;
-      while(std::getline(iss,temp,' '))
+      while(std::getline(iss,temp,skipws))
       {
          data[i][j] = std::stoi(temp);
          j++;
@@ -40,7 +40,7 @@ int main()
       i++;
   }
 
-  FIFO(data);
+  FIFO(data, i);
   //SJF();
   //BJF();
   return 0;
