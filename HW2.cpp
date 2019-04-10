@@ -2,16 +2,38 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <vector>
 #define MAX 100
 
 using namespace std;
 
-void FIFO(int data[][3]) {
-  int i;
-  int j;
+void FIFO(int data[][3], int size) {
+  cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
+  float turnaround;
+  float completion = 0;
+  float temp = 0;
+  float avg = 0;
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < 3; j++) {
+      cout << data[i][j] << " ";
+    }
+    cout << endl;
+    completion += data[i][2];
+    cout << "Completion time: " << completion << endl;
+    turnaround = completion - data[i][1];
+    cout << "Turnaround time: " << turnaround << endl;
+    temp += turnaround;
+  }
+  avg = temp / (size);
+  cout << "Average: " << avg << endl;
+}
 
-  for (i = 0; i < 3; i++) {
-    for (j = 0; j < 3; j++) {
+void SJF(int data[][3], int size) {
+  cout << "++++++++++++++++++++ SJF ++++++++++++++++++++" << endl;
+  int duration = 0;
+  int arrival = 0;
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < 3; j++) {
       cout << data[i][j] << " ";
     }
     cout << endl;
@@ -20,9 +42,10 @@ void FIFO(int data[][3]) {
 
 int main()
 {
-  int data[3][3];
+  int data[MAX][3];
   int i = 0;
   int j = 0;
+  int size;
   ifstream in("jobs.txt");
   std::string line;
   std::string temp;
@@ -39,9 +62,8 @@ int main()
       }
       i++;
   }
-
-  FIFO(data);
-  //SJF();
+  FIFO(data, i);
+  SJF(data, i);
   //BJF();
   return 0;
 }
