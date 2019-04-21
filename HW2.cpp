@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <vector>
+#include <algorithm>
 #include <queue> 
 #include "Job.h"
 #define MAX 100
@@ -44,11 +45,22 @@ void SJF(int data[][3], int size) {
   }
 }
 
+void printResults(vector<Job> &list){
+  std::sort(list.begin(), list.end(), [](Job&lhs, Job&rhs){return lhs.id<rhs.id;});
+  std::cout << "id\tstart\tend\tTotal time\tResponse time\n";
+  for(auto i = list.begin(); i != list.end(); i++){
+    int total =  i->finish - i->start;
+    int response =  i->start - i->arrival;
+    printf("%d\t%d\t%d\t%d\t\t%d\n", i->id, i->start, i->finish, total, response);
+  }
+}
+
 void STCF(int data[][3], int size){
-  cout << "++++++++++++++++++++ STCF +++++++++++++++++++" << endl;
-  std::priority_queue<Job, std::vector<Job>, cmpArrival> readyQ;
-  std::priority_queue<Job, std::vector<Job>, cmpId> finishedList;
+ 
+  std::priority_queue<Job, std::vector<Job>, decltype(arrivalCmp)> readyQ(arrivalCmp);
+  std::vector<Job> finishedList;
   std::vector<Job> activeQ;
+
 
   //push all jobs to queue sort by arrival time
   for (int i = 0; i < size; i++){
@@ -58,14 +70,23 @@ void STCF(int data[][3], int size){
 
   int clock = 0; //initialize clock
   while (!activeQ.empty() || !readyQ.empty()){
-    
+      Job *last = &activeQ.front();
+      
+      if (!activeQ.empty() && last->remain <= 0){  //if procress finished, remove from activeQ and add to finishedList
+        last->finish = clock; //record finish time
+        finishedList.push_back(*last); //add to finishedList
+
+        //pop from activeQ
+        std::pop_heap(activeQ.begin(), activeQ.end(), remainCmp);
+        activeQ.pop_back();
+      }
 
     if(readyQ.top().arrival == clock){
       while(!readyQ.empty() && readyQ.top().arrival == clock){ //check if job arrived
         activeQ.push_back(readyQ.top()); //add job to activeQ
         readyQ.pop();
       }
-       make_heap(activeQ.begin(), activeQ.end(), cmpRemain()); //sort 
+       make_heap(activeQ.begin(), activeQ.end(), remainCmp); //sort 
     }
     
     if (!activeQ.empty()){
@@ -73,36 +94,24 @@ void STCF(int data[][3], int size){
       if(!(running->started)){  //start procress if not running
         running->started = true; 
         running->start = clock; //record start time
-      } else{
-        running->remain--;  //decrement remaining time
-      }
-
-      if (running->remain <= 0){  //if procress finished, remove from activeQ and add to finishedList
-        running->finish = clock; //record finish time
-        finishedList.push(*running); //add to finishedList
-
-        //pop from activeQ
-        std::pop_heap(activeQ.begin(), activeQ.end(), cmpRemain());
-        activeQ.pop_back();
-      }
-      //std::cout << "clock: " << clock << "\n";
-      // for (auto i = activeQ.begin(); i != activeQ.end(); ++i){
-      //   printf("%d: %d\n", i->id, i->remain);
-      // }
+      } 
+      running->remain--;  //decrement remaining time
     }
+
+
+    std::cout << "clock: " << clock << "\n";
+    for (auto i = activeQ.begin(); i != activeQ.end(); ++i){
+      printf("%d: %d\n", i->id, i->remain);
+    }
+    
     clock++;
   }
 
   //print result
-  std::cout << "id\tstart\tend\tTotal time\tResponse time\n";
-  while(!finishedList.empty()){
-    const Job *item = &finishedList.top();
-    int total =  item->finish - item->start;
-    int response =  item->start - item->arrival;
-    printf("%d\t%d\t%d\t%d\t\t%d\n", item->id, item->start, item->finish, total, response);
-    finishedList.pop();
-  }
+  cout << "++++++++++++++++++++ STCF +++++++++++++++++++" << endl;
+  printResults(finishedList);
 }
+
 
 
 int main()
@@ -132,5 +141,6 @@ int main()
   //BJF();
 
   STCF(data, i);
+  //RR(data, i);
   return 0;
 }
