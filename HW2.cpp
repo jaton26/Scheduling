@@ -112,7 +112,76 @@ void STCF(int data[][3], int size){
   printResults(finishedList);
 }
 
+void RR(int data[][3], int size){
+ 
+  std::priority_queue<Job, std::vector<Job>, decltype(arrivalCmp)> readyQ(arrivalCmp);
+  std::vector<Job> finishedList;
+  std::vector<Job> runQ;
 
+  //push all jobs to queue sort by arrival time
+  for (int i = 0; i < size; i++){
+    Job newJob(data[i][0],data[i][1],data[i][2]);
+    readyQ.push(newJob);
+  }
+
+  int slice = 10; //time slice
+  int clock = 0; //init clock
+  int timer = 0; //timer to initialize interupt
+  int counter = 0; //tracker on run queue position
+
+  while (!runQ.empty() || !readyQ.empty()){
+    
+    if(!runQ.empty()){
+      Job *last = &runQ[counter];
+      if (last->remain <= 0){  //if procress finished, remove from activeQ and add to finishedList
+          last->finish = clock; //record finish time
+          finishedList.push_back(*last); //add to finishedList
+
+          //pop from run queue
+          runQ.erase(runQ.begin()+counter);
+      }
+    }
+
+    if (timer == slice){ //interupt and move tracker to next job
+      counter++;
+      timer = 0;
+    }
+
+    //add job to run queue
+    while(!readyQ.empty() && readyQ.top().arrival == clock){ //check if job arrived
+        runQ.push_back(readyQ.top()); //add job to run queue
+        readyQ.pop();
+    }
+    
+    if (!runQ.empty()){
+      
+      if(counter >= runQ.size())
+        counter = 0; //reset tracker to start of list when cycled through all jobs in list
+
+      Job *running = &runQ[counter]; //get currently schduled job
+
+      if(!(running->started)){  //start procress if not running
+        running->started = true; 
+        running->start = clock; //record start time
+      } 
+      
+      running->remain--;  //decrement remaining time
+      
+    }
+    /*  //debug output 
+    cout << timer << " " << counter << " ";
+    std::cout << "clock: " << clock << "\n";
+    for (auto i = runQ.begin(); i != runQ.end(); ++i){
+      printf("%d: %d\n", i->id, i->remain);
+    }*/
+    
+    timer++;
+    clock++;
+  }
+
+  cout << "+++++++++++++++++++++ RR ++++++++++++++++++++" << endl;
+  printResults(finishedList);
+}
 
 int main()
 {
@@ -141,6 +210,6 @@ int main()
   //BJF();
 
   STCF(data, i);
-  //RR(data, i);
+  RR(data, i);
   return 0;
 }
