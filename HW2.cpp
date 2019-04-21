@@ -59,7 +59,7 @@ void STCF(int data[][3], int size){
  
   std::priority_queue<Job, std::vector<Job>, decltype(arrivalCmp)> readyQ(arrivalCmp);
   std::vector<Job> finishedList;
-  std::vector<Job> activeQ;
+  std::vector<Job> runQ;
 
 
   //push all jobs to queue sort by arrival time
@@ -69,28 +69,28 @@ void STCF(int data[][3], int size){
   }
 
   int clock = 0; //initialize clock
-  while (!activeQ.empty() || !readyQ.empty()){
-      Job *last = &activeQ.front();
+  while (!runQ.empty() || !readyQ.empty()){
+      Job *last = &runQ.front();
       
-      if (!activeQ.empty() && last->remain <= 0){  //if procress finished, remove from activeQ and add to finishedList
+      if (!runQ.empty() && last->remain <= 0){  //if procress finished, remove from run queue and add to finishedList
         last->finish = clock; //record finish time
         finishedList.push_back(*last); //add to finishedList
 
-        //pop from activeQ
-        std::pop_heap(activeQ.begin(), activeQ.end(), remainCmp);
-        activeQ.pop_back();
+        //pop from runQ
+        std::pop_heap(runQ.begin(), runQ.end(), remainCmp);
+        runQ.pop_back();
       }
 
     if(readyQ.top().arrival == clock){
       while(!readyQ.empty() && readyQ.top().arrival == clock){ //check if job arrived
-        activeQ.push_back(readyQ.top()); //add job to activeQ
+        runQ.push_back(readyQ.top()); //add job to runQ
         readyQ.pop();
       }
-       make_heap(activeQ.begin(), activeQ.end(), remainCmp); //sort 
+       make_heap(runQ.begin(), runQ.end(), remainCmp); //sort 
     }
     
-    if (!activeQ.empty()){
-      Job *running = &activeQ.front(); //get schduled job
+    if (!runQ.empty()){
+      Job *running = &runQ.front(); //get schduled job
       if(!(running->started)){  //start procress if not running
         running->started = true; 
         running->start = clock; //record start time
@@ -100,7 +100,7 @@ void STCF(int data[][3], int size){
 
     /* //debug output
     std::cout << "clock: " << clock << "\n";
-    for (auto i = activeQ.begin(); i != activeQ.end(); ++i){
+    for (auto i = runQ.begin(); i != runQ.end(); ++i){
       printf("%d: %d\n", i->id, i->remain);
     }*/
     
@@ -133,7 +133,7 @@ void RR(int data[][3], int size){
     
     if(!runQ.empty()){
       Job *last = &runQ[counter];
-      if (last->remain <= 0){  //if procress finished, remove from activeQ and add to finishedList
+      if (last->remain <= 0){  //if procress finished, remove from runQ and add to finishedList
           last->finish = clock; //record finish time
           finishedList.push_back(*last); //add to finishedList
 
