@@ -98,11 +98,11 @@ void STCF(int data[][3], int size){
       running->remain--;  //decrement remaining time
     }
 
-
+    /* //debug output
     std::cout << "clock: " << clock << "\n";
     for (auto i = activeQ.begin(); i != activeQ.end(); ++i){
       printf("%d: %d\n", i->id, i->remain);
-    }
+    }*/
     
     clock++;
   }
