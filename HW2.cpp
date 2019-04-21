@@ -293,7 +293,7 @@ int main()
   int i = 0;
   int j = 0;
   int size;
-  ifstream in("jobs.txt");
+  ifstream in("jobs.dat");
   std::string line;
   std::string temp;
   while(std::getline(in, line))
