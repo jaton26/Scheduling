@@ -34,13 +34,14 @@ void FIFO(int data[][3], int size) {
     }
     else{
       cout << "Start Time: " << completion << endl;
+      start = completion;
     }
     completion += data[i][2];
     //cout << "Completion time: " << completion << endl;
     cout << "Finish Time: " << completion << endl;
     turnaround = completion - data[i][1];
     cout << "Total Time Elapsed: " << turnaround << endl;
-    response = completion - completion;
+    response = start - data[i][1];
     cout << "Response Time: " << response << endl << endl;
     //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
@@ -108,13 +109,14 @@ void SJF(int data[][3], int size) {
     }
     else{
       cout << "Start Time: " << completion << endl;
+      start = completion;
     }
     completion += sData[i][2];
     //cout << "Completion time: " << completion << endl;
     cout << "Finish Time: " << completion << endl;
     turnaround = completion - sData[i][1];
     cout << "Total Time Elapsed: " << turnaround << endl;
-    response = completion - completion;
+    response = start - data[i][1];
     cout << "Response Time: " << response << endl << endl;
     //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
@@ -180,13 +182,14 @@ void BJF(int data[][3], int size) {
     }
     else{
       cout << "Start Time: " << completion << endl;
+      start = completion;
     }
     completion += bData[i][2];
     //cout << "Completion time: " << completion << endl;
     cout << "Finish Time: " << completion << endl;
     turnaround = completion - bData[i][1];
     cout << "Total Time Elapsed: " << turnaround << endl;
-    response = completion - completion;
+    response = start - data[i][1];
     cout << "Response Time: " << response << endl << endl;
     //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
