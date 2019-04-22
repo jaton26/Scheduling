@@ -26,6 +26,7 @@ void FIFO(int data[][3], int size) {
     }
     cout << endl;
     //completion += data[i][2];
+    cout << "Job: " << data[i][0] << endl;
     start = data[i][1];
     if(start > completion){
       cout << "Start Time: " << start << endl;
@@ -34,7 +35,6 @@ void FIFO(int data[][3], int size) {
     else{
       cout << "Start Time: " << completion << endl;
     }
-    cout << "Job: " << data[i][0] << endl;
     completion += data[i][2];
     //cout << "Completion time: " << completion << endl;
     cout << "Finish Time: " << completion << endl;
@@ -100,6 +100,7 @@ void SJF(int data[][3], int size) {
     }
     cout << endl;
     //completion += data[i][2];
+    cout << "Job: " << sData[i][0] << endl;
     start = sData[i][1];
     if(start > completion){
       cout << "Start Time: " << start << endl;
@@ -108,7 +109,6 @@ void SJF(int data[][3], int size) {
     else{
       cout << "Start Time: " << completion << endl;
     }
-    cout << "Job: " << sData[i][0] << endl;
     completion += sData[i][2];
     //cout << "Completion time: " << completion << endl;
     cout << "Finish Time: " << completion << endl;
@@ -173,6 +173,7 @@ void BJF(int data[][3], int size) {
     cout << endl;
     //completion += data[i][2];
     start = bData[i][1];
+    cout << "Job: " << bData[i][0] << endl;
     if(start > completion){
       cout << "Start Time: " << start << endl;
       completion = start;
@@ -180,7 +181,6 @@ void BJF(int data[][3], int size) {
     else{
       cout << "Start Time: " << completion << endl;
     }
-    cout << "Job: " << bData[i][0] << endl;
     completion += bData[i][2];
     //cout << "Completion time: " << completion << endl;
     cout << "Finish Time: " << completion << endl;
