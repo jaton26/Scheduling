@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
-#include <vector>
+//#include <vector>
 #define MAX 100
 
 using namespace std;
@@ -40,6 +40,16 @@ void SJF(int data[][3], int size) {
   }
 }
 
+void BJF(int data[][3], int size){
+  cout << "++++++++++++++++++++ BJF ++++++++++++++++++++" << endl;
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < 3; j++) {
+      cout << data[i][j] << " ";
+    }
+    cout << endl;
+  }
+}
+
 int main()
 {
   int data[MAX][3];
@@ -64,6 +74,6 @@ int main()
   }
   FIFO(data, i);
   SJF(data, i);
-  //BJF();
+  BJF(data, i);
   return 0;
 }
