@@ -16,6 +16,8 @@ void FIFO(int data[][3], int size) {
   cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
   float turnaround;
   float completion = 0;
+  float start = 0;
+  float response = 0;
   float temp = 0;
   float avg = 0;
   for (int i = 0; i < size; i++) {
@@ -23,22 +25,38 @@ void FIFO(int data[][3], int size) {
       cout << data[i][j] << " ";
     }
     cout << endl;
+    //completion += data[i][2];
+    start = data[i][1];
+    if(start > completion){
+      cout << "Start Time: " << start << endl;
+      completion = start;
+    }
+    else{
+      cout << "Start Time: " << completion << endl;
+    }
+    cout << "Job: " << data[i][0] << endl;
     completion += data[i][2];
-    cout << "Completion time: " << completion << endl;
+    //cout << "Completion time: " << completion << endl;
+    cout << "Finish Time: " << completion << endl;
     turnaround = completion - data[i][1];
-    cout << "Turnaround time: " << turnaround << endl;
+    cout << "Total Time Elapsed: " << turnaround << endl;
+    response = completion - completion;
+    cout << "Response Time: " << response << endl << endl;
+    //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
   }
   avg = temp / (size);
-  cout << "\nAverage: " << avg << endl;
+  //cout << "\nAverage: " << avg << endl;
 }
 
 void SJF(int data[][3], int size) {
   cout << "++++++++++++++++++++ SJF ++++++++++++++++++++" << endl;
   float turnaround;
   int completion = 0;
+  float response = 0;
   float temp = 0;
   float avg = 0;
+  int start = 0;
   int pos = 0;
   int tempP;
   int tempA;
@@ -76,27 +94,41 @@ void SJF(int data[][3], int size) {
 
   completion = 0;
 
-  for (i = 0; i < size; i++) {
-    for (j = 0; j < 3; j++) {
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < 3; j++) {
       cout << sData[i][j] << " ";
     }
     cout << endl;
+    //completion += data[i][2];
+    start = sData[i][1];
+    if(start > completion){
+      cout << "Start Time: " << start << endl;
+      completion = start;
+    }
+    else{
+      cout << "Start Time: " << completion << endl;
+    }
+    cout << "Job: " << sData[i][0] << endl;
     completion += sData[i][2];
-    cout << "Completion time: " << completion << endl;
+    //cout << "Completion time: " << completion << endl;
+    cout << "Finish Time: " << completion << endl;
     turnaround = completion - sData[i][1];
-    cout << "Turnaround time: " << turnaround << endl;
+    cout << "Total Time Elapsed: " << turnaround << endl;
+    response = completion - completion;
+    cout << "Response Time: " << response << endl << endl;
+    //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
   }
-  avg = temp / (size);
-  cout << "\nAverage: " << avg << endl;
 }
 
 void BJF(int data[][3], int size) {
   cout << "++++++++++++++++++++ BJF ++++++++++++++++++++" << endl;
   float turnaround;
   int completion = 0;
+  float response = 0;
   float temp = 0;
   float avg = 0;
+  int start = 0;
   int pos = 0;
   int tempP;
   int tempA;
@@ -134,20 +166,33 @@ void BJF(int data[][3], int size) {
 
   completion = 0;
 
-  for (i = 0; i < size; i++) {
-    for (j = 0; j < 3; j++) {
+  for (int i = 0; i < size; i++) {
+    for (int j = 0; j < 3; j++) {
       cout << bData[i][j] << " ";
     }
     cout << endl;
+    //completion += data[i][2];
+    start = bData[i][1];
+    if(start > completion){
+      cout << "Start Time: " << start << endl;
+      completion = start;
+    }
+    else{
+      cout << "Start Time: " << completion << endl;
+    }
+    cout << "Job: " << bData[i][0] << endl;
     completion += bData[i][2];
-    cout << "Completion time: " << completion << endl;
+    //cout << "Completion time: " << completion << endl;
+    cout << "Finish Time: " << completion << endl;
     turnaround = completion - bData[i][1];
-    cout << "Turnaround time: " << turnaround << endl;
+    cout << "Total Time Elapsed: " << turnaround << endl;
+    response = completion - completion;
+    cout << "Response Time: " << response << endl << endl;
+    //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
   }
-  avg = temp / (size);
-  cout << "\nAverage: " << avg << endl;
 }
+
 
 void printResults(vector<Job> &list){
   std::sort(list.begin(), list.end(), [](Job&lhs, Job&rhs){return lhs.id<rhs.id;});
@@ -315,5 +360,6 @@ int main()
 
   STCF(data, i);
   RR(data, i);
+
   return 0;
 }
