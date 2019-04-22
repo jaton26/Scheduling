@@ -116,7 +116,7 @@ void SJF(int data[][3], int size) {
     cout << "Finish Time: " << completion << endl;
     turnaround = completion - sData[i][1];
     cout << "Total Time Elapsed: " << turnaround << endl;
-    response = start - data[i][1];
+    response = start - sData[i][1];
     cout << "Response Time: " << response << endl << endl;
     //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
@@ -189,7 +189,7 @@ void BJF(int data[][3], int size) {
     cout << "Finish Time: " << completion << endl;
     turnaround = completion - bData[i][1];
     cout << "Total Time Elapsed: " << turnaround << endl;
-    response = start - data[i][1];
+    response = start - bData[i][1];
     cout << "Response Time: " << response << endl << endl;
     //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
