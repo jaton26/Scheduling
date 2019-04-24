@@ -245,11 +245,12 @@ void STCF(std::vector<Job> readyQ){
       running->remain--;  //decrement remaining time
     }
 
-     //debug output
+    /* //debug output
     std::cout << "clock: " << clock << "\n";
     for (auto i = runQ.begin(); i != runQ.end(); ++i){
       printf("%d: %d\n", i->id, i->remain);
     }
+    */
     
     clock++;
   }
