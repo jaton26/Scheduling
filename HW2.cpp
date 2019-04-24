@@ -261,7 +261,7 @@ void RR(std::vector<Job> readyQ){
   std::vector<Job> finishedList;
   std::vector<Job> runQ;
 
-  int slice = 10; //time slice
+  int slice = 1; //time slice
   int clock = 0; //init clock
   int timer = 0; //timer to initialize interupt
   int counter = 0; //tracker on run queue position
