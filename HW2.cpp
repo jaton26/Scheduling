@@ -329,27 +329,32 @@ int main()
   ifstream in("jobs.dat");
   std::string line;
   std::string temp;
+  std::vector<Job> jobList;
+
   while(std::getline(in, line))
   {
       std::istringstream iss(line);
 
       // Parse each line using the input string stream
-      j = 0;
-      while(std::getline(iss,temp,' '))
-      {
-         data[i][j] = std::stoi(temp);
-         j++;
-      }
+      // j = 0;
+      // while(std::getline(iss,temp,' '))
+      // {
+      //    data[i][j] = std::stoi(temp);
+      //    j++;
+      // }
+      
+      std::getline(iss,temp,' ');
+      int id = std::stoi(temp);
+      std::getline(iss,temp,' ');
+      int arrival = std::stoi(temp);
+      std::getline(iss,temp,' ');
+      int duration = std::stoi(temp);
+      
+      Job newJob(id, arrival, duration);
+      jobList.push_back(newJob);
       i++;
   }
 
-  std::vector<Job> jobList;
-
-    //push all jobs to queue sort by arrival time
-  for (int c = 0; c < i; c++){
-    Job newJob(data[c][0],data[c][1],data[c][2]);
-    jobList.push_back(newJob);
-  }
 
   std::sort(jobList.begin(), jobList.end(),arrivalCmp);
 
