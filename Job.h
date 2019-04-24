@@ -8,7 +8,7 @@ struct Job{
   
 };
 
-static auto arrivalCmp = [](Job&lhs, Job&rhs){return lhs.arrival>rhs.arrival;};
+static auto arrivalCmp = [](Job&lhs, Job&rhs){return lhs.arrival<rhs.arrival;};
 static auto remainCmp = [](Job&lhs, Job&rhs){return lhs.remain>rhs.remain;};
 
 #endif

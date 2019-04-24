@@ -207,18 +207,10 @@ void printResults(vector<Job> &list){
   }
 }
 
-void STCF(int data[][3], int size){
- 
-  std::priority_queue<Job, std::vector<Job>, decltype(arrivalCmp)> readyQ(arrivalCmp);
+void STCF(std::vector<Job> readyQ){
   std::vector<Job> finishedList;
   std::vector<Job> runQ;
 
-
-  //push all jobs to queue sort by arrival time
-  for (int i = 0; i < size; i++){
-    Job newJob(data[i][0],data[i][1],data[i][2]);
-    readyQ.push(newJob);
-  }
 
   int clock = 0; //initialize clock
   while (!runQ.empty() || !readyQ.empty()){
@@ -233,10 +225,10 @@ void STCF(int data[][3], int size){
         runQ.pop_back();
       }
 
-    if(readyQ.top().arrival == clock){
-      while(!readyQ.empty() && readyQ.top().arrival == clock){ //check if job arrived
-        runQ.push_back(readyQ.top()); //add job to runQ
-        readyQ.pop();
+    if(readyQ.front().arrival == clock){
+      while(!readyQ.empty() && readyQ.front().arrival == clock){ //check if job arrived
+        runQ.push_back(readyQ.front()); //add job to runQ
+        readyQ.erase(readyQ.begin());
       }
        make_heap(runQ.begin(), runQ.end(), remainCmp); //sort 
     }
@@ -264,17 +256,10 @@ void STCF(int data[][3], int size){
   printResults(finishedList);
 }
 
-void RR(int data[][3], int size){
+void RR(std::vector<Job> readyQ){
  
-  std::priority_queue<Job, std::vector<Job>, decltype(arrivalCmp)> readyQ(arrivalCmp);
   std::vector<Job> finishedList;
   std::vector<Job> runQ;
-
-  //push all jobs to queue sort by arrival time
-  for (int i = 0; i < size; i++){
-    Job newJob(data[i][0],data[i][1],data[i][2]);
-    readyQ.push(newJob);
-  }
 
   int slice = 10; //time slice
   int clock = 0; //init clock
@@ -300,9 +285,9 @@ void RR(int data[][3], int size){
     }
 
     //add job to run queue
-    while(!readyQ.empty() && readyQ.top().arrival == clock){ //check if job arrived
-        runQ.push_back(readyQ.top()); //add job to run queue
-        readyQ.pop();
+    while(!readyQ.empty() && readyQ.front().arrival == clock){ //check if job arrived
+        runQ.push_back(readyQ.front()); //add job to run queue
+        readyQ.erase(readyQ.begin());
     }
     
     if (!runQ.empty()){
@@ -357,12 +342,23 @@ int main()
       }
       i++;
   }
+
+  std::vector<Job> jobList;
+
+    //push all jobs to queue sort by arrival time
+  for (int c = 0; c < i; c++){
+    Job newJob(data[c][0],data[c][1],data[c][2]);
+    jobList.push_back(newJob);
+  }
+
+  std::sort(jobList.begin(), jobList.end(),arrivalCmp);
+
   FIFO(data, i);
   SJF(data, i);
   BJF(data, i);
 
-  STCF(data, i);
-  RR(data, i);
+  STCF(jobList);
+  RR(jobList);
 
   return 0;
 }
