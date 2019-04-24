@@ -207,6 +207,10 @@ void printResults(vector<Job> &list){
   }
 }
 
+/*
+Note: STCF schedules every clock cycle, not when a job arrives.
+*/
+
 void STCF(std::vector<Job> readyQ){
   std::vector<Job> finishedList;
   std::vector<Job> runQ;
@@ -214,25 +218,24 @@ void STCF(std::vector<Job> readyQ){
 
   int clock = 0; //initialize clock
   while (!runQ.empty() || !readyQ.empty()){
-      Job *last = &runQ.front();
+    Job *last = &runQ.front();
       
-      if (!runQ.empty() && last->remain <= 0){  //if procress finished, remove from run queue and add to finishedList
-        last->finish = clock; //record finish time
-        finishedList.push_back(*last); //add to finishedList
+    if (!runQ.empty() && last->remain <= 0){  //if procress finished, remove from run queue and add to finishedList
+      last->finish = clock; //record finish time
+      finishedList.push_back(*last); //add to finishedList
 
-        //pop from runQ
-        std::pop_heap(runQ.begin(), runQ.end(), remainCmp);
-        runQ.pop_back();
-      }
-
-    if(readyQ.front().arrival == clock){
-      while(!readyQ.empty() && readyQ.front().arrival == clock){ //check if job arrived
-        runQ.push_back(readyQ.front()); //add job to runQ
-        readyQ.erase(readyQ.begin());
-      }
-       make_heap(runQ.begin(), runQ.end(), remainCmp); //sort 
+      //pop from runQ
+      std::pop_heap(runQ.begin(), runQ.end(), remainCmp);
+      runQ.pop_back();
     }
+
     
+    while(!readyQ.empty() && readyQ.front().arrival == clock){ //check if job arrived
+      runQ.push_back(readyQ.front()); //add job to runQ
+      readyQ.erase(readyQ.begin());
+    }
+   
+    make_heap(runQ.begin(), runQ.end(), remainCmp); //sort by shortest remaining time
     if (!runQ.empty()){
       Job *running = &runQ.front(); //get schduled job
       if(!(running->started)){  //start procress if not running
@@ -242,11 +245,11 @@ void STCF(std::vector<Job> readyQ){
       running->remain--;  //decrement remaining time
     }
 
-    /* //debug output
+     //debug output
     std::cout << "clock: " << clock << "\n";
     for (auto i = runQ.begin(); i != runQ.end(); ++i){
       printf("%d: %d\n", i->id, i->remain);
-    }*/
+    }
     
     clock++;
   }
