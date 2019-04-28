@@ -10,44 +10,44 @@
 
 using namespace std;
 
-
-
-void FIFO(int data[][3], int size) {
-  cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
-  float turnaround;
-  float completion = 0;
-  float start = 0;
-  float response = 0;
-  float temp = 0;
-  float avg = 0;
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < 3; j++) {
-      cout << data[i][j] << " ";
-    }
-    cout << endl;
-    //completion += data[i][2];
-    cout << "Job: " << data[i][0] << endl;
-    start = data[i][1];
-    if(start > completion){
-      cout << "Start Time: " << start << endl;
-      completion = start;
-    }
-    else{
-      cout << "Start Time: " << completion << endl;
-      start = completion;
-    }
-    completion += data[i][2];
-    //cout << "Completion time: " << completion << endl;
-    cout << "Finish Time: " << completion << endl;
-    turnaround = completion - data[i][1];
-    cout << "Total Time Elapsed: " << turnaround << endl;
-    response = start - data[i][1];
-    cout << "Response Time: " << response << endl << endl;
-    //cout << "Turnaround time: " << turnaround << endl;
-    temp += turnaround;
+void printResults(vector<Job> &list){
+  std::sort(list.begin(), list.end(), [](Job&lhs, Job&rhs){return lhs.id<rhs.id;});
+  std::cout << "id\tstart\tend\tTotal time\tResponse time\n";
+  for(auto i = list.begin(); i != list.end(); i++){
+    int total =  i->finish - i->start;
+    int response =  i->start - i->arrival;
+    printf("%d\t%d\t%d\t%d\t\t%d\n", i->id, i->start, i->finish, total, response);
   }
-  avg = temp / (size);
-  //cout << "\nAverage: " << avg << endl;
+}
+
+void FIFO(std::vector<Job> readyQ, int size) {
+  cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
+  std::vector<Job> finishedList;
+  Job *in = &readyQ[0];
+  in->start = 1000;
+  int i = 0;
+  int current= 0;
+
+  for(int i = 0; i < size; i++){
+    Job *in = &readyQ[i];
+    Job *temp = &finishedList[0];
+    if(in->arrival > current){
+      in->start = in->arrival;
+      in->finish = in->start + in->duration;
+      current = in->finish;
+    }
+    else if(in->arrival <= current){
+      in->start = current;
+      in->finish = in->start + in->duration;
+      current = in->finish;
+    }
+    finishedList.push_back(*in);
+    //cout << "ID: " << in->id << endl;
+    //cout << "Start: " << in->start << endl;
+    //cout << "Finish: " << in->finish << endl;
+    
+  }
+  printResults(finishedList);
 }
 
 void SJF(int data[][3], int size) {
@@ -193,17 +193,6 @@ void BJF(int data[][3], int size) {
     cout << "Response Time: " << response << endl << endl;
     //cout << "Turnaround time: " << turnaround << endl;
     temp += turnaround;
-  }
-}
-
-
-void printResults(vector<Job> &list){
-  std::sort(list.begin(), list.end(), [](Job&lhs, Job&rhs){return lhs.id<rhs.id;});
-  std::cout << "id\tstart\tend\tTotal time\tResponse time\n";
-  for(auto i = list.begin(); i != list.end(); i++){
-    int total =  i->finish - i->start;
-    int response =  i->start - i->arrival;
-    printf("%d\t%d\t%d\t%d\t\t%d\n", i->id, i->start, i->finish, total, response);
   }
 }
 
@@ -359,10 +348,9 @@ int main()
       i++;
   }
 
-
   std::sort(jobList.begin(), jobList.end(),arrivalCmp);
 
-  FIFO(data, i);
+  FIFO(jobList, i);
   SJF(data, i);
   BJF(data, i);
 
