@@ -61,6 +61,7 @@ void SJF(int data[][3], int size) {
   float avg = 0;
   int start = 0;
   int min;
+  int pos;
   int tempP;
   int tempA;
   int tempD;
@@ -77,10 +78,12 @@ void SJF(int data[][3], int size) {
 
   for (i = 0; i < size; i++) {
     min = sData[i][1];
+    pos = i;
 
     for (j = i + 1; j < size; j++) {
-      if (sData[j][1] < min) {
+      if (sData[j][1] < min || sData[j][2] < sData[pos][2]) {
         min = sData[j][1];
+        pos = j;
 
 	tempP = sData[i][0];
 	tempA = sData[i][1];
@@ -155,6 +158,7 @@ void BJF(int data[][3], int size) {
   float avg = 0;
   int start = 0;
   int max;
+  int pos;
   int tempP;
   int tempA;
   int tempD;
@@ -170,10 +174,12 @@ void BJF(int data[][3], int size) {
 
   for (i = 0; i < size; i++) {
     max = bData[i][1];
+    pos = i;
 
     for (j = i + 1; j < size; j++) {
-      if (bData[j][1] > max) {
+      if (bData[j][1] < max && bData[j][2] > bData[pos][2]) {
         max = bData[j][1];
+	pos = j;
 
 	tempP = bData[i][0];
 	tempA = bData[i][1];
