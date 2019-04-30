@@ -80,9 +80,12 @@ void SJF(int data[][3], int size) {
       if (sData[j][1] < min) {
         min = sData[j][1];
 
+	tempP = sData[i][0];
 	tempA = sData[i][1];
 	tempD = sData[i][2];
-	      
+	
+        sData[i][0] = sData[j][0];
+        sData[j][0] = tempP;
 	sData[i][1] = sData[j][1];
 	sData[j][1] = tempA;
 	sData[i][2] = sData[j][2];
@@ -93,10 +96,6 @@ void SJF(int data[][3], int size) {
      
   }
 
-  /*for (i = 0; i < size; i++) {
-    cout << sData[i][1];
-  }*/
-  
   std::vector<Job> finishedSJFList;
   std::vector<Job> SJList;
   Job *sIn;
@@ -166,9 +165,12 @@ void BJF(int data[][3], int size) {
       if (bData[j][1] > max) {
         max = bData[j][1];
 
+	tempP = bData[i][0];
 	tempA = bData[i][1];
 	tempD = bData[i][2];
-	      
+	
+        bData[i][0] = bData[j][0];
+        bData[j][0] = tempP;
 	bData[i][1] = bData[j][1];
 	bData[j][1] = tempA;
 	bData[i][2] = bData[j][2];
@@ -188,7 +190,6 @@ void BJF(int data[][3], int size) {
 
   for (i = 0; i < size; i++) {
     id       = bData[i][0];
-    //cout << id << "\n";
     arrival  = bData[i][1];
     duration = bData[i][2];
     Job bIn(id, arrival, duration);
@@ -199,7 +200,7 @@ void BJF(int data[][3], int size) {
 
   for(i = 0; i < size; i++) {
     Job *bIn = &BJList[i];
-    if (bIn->arrival > current) {
+    if (current == 0) {
       bIn->start = bIn->arrival;
       bIn->finish = bIn->start + bIn->duration;
       current = bIn->finish;
@@ -343,6 +344,7 @@ int main()
   int j = 0;
   int size;
   ifstream in("jobs.dat");
+  //ifstream in("jobs.txt");
   std::string line;
   std::string temp;
   std::vector<Job> jobList;
@@ -350,13 +352,14 @@ int main()
 while(std::getline(in, line))
   {
       std::istringstream iss(line);
+
       // Parse each line using the input string stream
-       j = 0;
-       while(std::getline(iss,temp,' '))
-       {
-          data[i][j] = std::stoi(temp);
-          j++;
-       }
+      // j = 0;
+      // while(std::getline(iss,temp,' '))
+      // {
+      //    data[i][j] = std::stoi(temp);
+      //    j++;
+      // }
       
       std::getline(iss,temp,' ');
       int id = std::stoi(temp);
@@ -364,6 +367,10 @@ while(std::getline(in, line))
       int arrival = std::stoi(temp);
       std::getline(iss,temp,' ');
       int duration = std::stoi(temp);
+      
+      data[i][0] = id;
+      data[i][1] = arrival;
+      data[i][2] = duration;
       
       Job newJob(id, arrival, duration);
       jobList.push_back(newJob);
