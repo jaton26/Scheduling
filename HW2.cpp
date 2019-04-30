@@ -58,7 +58,7 @@ void SJF(int data[][3], int size) {
   float temp = 0;
   float avg = 0;
   int start = 0;
-  int pos = 0;
+  int min;
   int tempP;
   int tempA;
   int tempD;
@@ -74,25 +74,28 @@ void SJF(int data[][3], int size) {
   }
 
   for (i = 0; i < size; i++) {
-    pos = i;
+    min = sData[i][1];
 
     for (j = i + 1; j < size; j++) {
-      if (sData[j][1] < completion && sData[j][2] < sData[pos][2]) {
-        pos = j;
+      if (sData[j][1] < min) {
+        min = sData[j][1];
+
+	tempA = sData[i][1];
+	tempD = sData[i][2];
+	      
+	sData[i][1] = sData[j][1];
+	sData[j][1] = tempA;
+	sData[i][2] = sData[j][2];
+	sData[j][2] = tempD;
+	completion += sData[i][2]; 
       }
     }
-    tempP = sData[i][0];
-    tempA = sData[i][1];
-    tempD = sData[i][2];
-      
-    sData[i][0] = sData[pos][0];
-    sData[pos][0] = tempP;
-    sData[i][1] = sData[pos][1];
-    sData[pos][1] = tempA;
-    sData[i][2] = sData[pos][2];
-    sData[pos][2] = tempD;
-    completion += sData[i][2];  
+     
   }
+
+  /*for (i = 0; i < size; i++) {
+    cout << sData[i][1];
+  }*/
   
   std::vector<Job> finishedSJFList;
   std::vector<Job> SJList;
@@ -142,7 +145,7 @@ void BJF(int data[][3], int size) {
   float temp = 0;
   float avg = 0;
   int start = 0;
-  int pos = 0;
+  int max;
   int tempP;
   int tempA;
   int tempD;
@@ -157,24 +160,23 @@ void BJF(int data[][3], int size) {
   }
 
   for (i = 0; i < size; i++) {
-    pos = i;
+    max = bData[i][1];
 
     for (j = i + 1; j < size; j++) {
-      if (bData[j][1] < completion && bData[j][2] > bData[pos][2]) {
-        pos = j;
+      if (bData[j][1] > max) {
+        max = bData[j][1];
+
+	tempA = bData[i][1];
+	tempD = bData[i][2];
+	      
+	bData[i][1] = bData[j][1];
+	bData[j][1] = tempA;
+	bData[i][2] = bData[j][2];
+	bData[j][2] = tempD;
+	completion += bData[i][2]; 
       }
     }
-    tempP = bData[i][0];
-    tempA = bData[i][1];
-    tempD = bData[i][2];
-      
-    bData[i][0] = bData[pos][0];
-    bData[pos][0] = tempP;
-    bData[i][1] = bData[pos][1];
-    bData[pos][1] = tempA;
-    bData[i][2] = bData[pos][2];
-    bData[pos][2] = tempD;
-    completion += bData[i][2];  
+     
   }
 
   std::vector<Job> finishedBJFList;
@@ -345,9 +347,17 @@ int main()
   std::string temp;
   std::vector<Job> jobList;
 
-  while(std::getline(in, line))
+while(std::getline(in, line))
   {
       std::istringstream iss(line);
+      // Parse each line using the input string stream
+       j = 0;
+       while(std::getline(iss,temp,' '))
+       {
+          data[i][j] = std::stoi(temp);
+          j++;
+       }
+      
       std::getline(iss,temp,' ');
       int id = std::stoi(temp);
       std::getline(iss,temp,' ');
@@ -355,30 +365,11 @@ int main()
       std::getline(iss,temp,' ');
       int duration = std::stoi(temp);
       
-      data[i][0] = id;
-      data[i][1] = arrival;
-      data[i][2] = duration;
-      
       Job newJob(id, arrival, duration);
       jobList.push_back(newJob);
       i++;
   }
-
   std::sort(jobList.begin(), jobList.end(),arrivalCmp);
-  int k = 0;
-  int l = 0;
-
-  while(std::getline(in, line)) {
-      std::istringstream iss(line);
-      // Parse each line using the input string stream
-      l = 0;
-      while(std::getline(iss,temp,' '))
-      {
-         data[i][j] = std::stoi(temp);
-         l++;
-      }
-      k++;
-  }
 
   FIFO(jobList, i);
   SJF(data, i);
