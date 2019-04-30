@@ -348,15 +348,6 @@ int main()
   while(std::getline(in, line))
   {
       std::istringstream iss(line);
-
-      // Parse each line using the input string stream
-       j = 0;
-       while(std::getline(iss,temp,' '))
-       {
-          data[i][j] = std::stoi(temp);
-          j++;
-       }
-      
       std::getline(iss,temp,' ');
       int id = std::stoi(temp);
       std::getline(iss,temp,' ');
@@ -370,6 +361,20 @@ int main()
   }
 
   std::sort(jobList.begin(), jobList.end(),arrivalCmp);
+  int k = 0;
+  int l = 0;
+
+  while(std::getline(in, line)) {
+      std::istringstream iss(line);
+      // Parse each line using the input string stream
+      l = 0;
+      while(std::getline(iss,temp,' '))
+      {
+         data[i][j] = std::stoi(temp);
+         l++;
+      }
+      k++;
+  }
 
   FIFO(jobList, i);
   SJF(data, i);
