@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -20,13 +21,25 @@ void printResults(vector<Job> &list){
   }
 }
 
+void printResultsNP(vector<Job> &list){
+  //std::sort(list.begin(), list.end(), [](Job&lhs, Job&rhs){return lhs.id<rhs.id;});
+  std::cout << "id\tstart\tend\tTotal time\tResponse time\n";
+  for(auto i = list.begin(); i != list.end(); i++){
+    int total =  i->finish - i->start;
+    int response =  i->start - i->arrival;
+    printf("%d\t%d\t%d\t%d\t\t%d\n", i->id, i->start, i->finish, total, response);
+  }
+}
+
 void FIFO(std::vector<Job> readyQ, int size) {
   cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
   std::vector<Job> finishedList;
+  Job *in = &readyQ[0];
+  in->start = 1000;
   int i = 0;
   int current= 0;
 
-  for(int i = 0; i < size; i++){
+  for(i = 0; i < size; i++){
     Job *in = &readyQ[i];
     Job *temp = &finishedList[0];
     if(in->arrival > current){
@@ -39,18 +52,10 @@ void FIFO(std::vector<Job> readyQ, int size) {
       in->finish = in->start + in->duration;
       current = in->finish;
     }
-    finishedList.push_back(*in);
-    //cout << " Current: " << i << current << endl;
-    cout << "ID: " << in->id << endl;
-    cout << "Start: " << in->start << endl;
-    cout << "Finish: " << in->finish << endl;
-    cout << "Total Time: " << in->finish - in->start << endl;
-    cout << "Response Time: " << in->start - in->arrival << endl << endl;
-    
+    finishedList.push_back(*in); 
   }
-  //printResults(finishedList);
+  printResultsNP(finishedList);
 }
-
 
 void SJF(int data[][3], int size) {
   cout << "++++++++++++++++++++ SJF ++++++++++++++++++++" << endl;
@@ -61,6 +66,7 @@ void SJF(int data[][3], int size) {
   float avg = 0;
   int start = 0;
   int min;
+  int small;
   int pos;
   int tempP;
   int tempA;
@@ -76,14 +82,44 @@ void SJF(int data[][3], int size) {
     }  
   }
 
-  for (i = 0; i < size; i++) {
+    for (i = 0; i < size; i++) {
     min = sData[i][1];
-    pos = i;
 
     for (j = i + 1; j < size; j++) {
-      if (sData[j][1] < min || sData[j][2] < sData[pos][2]) {
+      
+      if (sData[j][1] < min) {
         min = sData[j][1];
-        pos = j;
+
+	tempP = sData[i][0];
+	tempA = sData[i][1];
+	tempD = sData[i][2];
+	
+        sData[i][0] = sData[j][0];
+        sData[j][0] = tempP;
+	sData[i][1] = sData[j][1];
+	sData[j][1] = tempA;
+	sData[i][2] = sData[j][2];
+	sData[j][2] = tempD; 
+      }
+    } 
+  }
+/*
+  for (i = 0; i < size; i++) {
+    cout << sData[i][0] << " ";
+    cout << sData[i][1] << " ";
+    cout << sData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
+  for (i = 1; i < size; i++) {
+    small = sData[i][2];
+
+    for (j = i + 1; j < size; j++) {
+      if (completion == 0) {
+	completion = sData[i][1] + sData[i][2];
+      }
+      if (sData[j][1] <= completion && sData[j][2] < sData[i][2]) {
+        small = sData[j][2];
 
 	tempP = sData[i][0];
 	tempA = sData[i][1];
@@ -97,16 +133,16 @@ void SJF(int data[][3], int size) {
 	sData[j][2] = tempD;
 	completion += sData[i][2]; 
       }
-    }
-     
+    } 
   }
-
+/*
   for (i = 0; i < size; i++) {
     cout << sData[i][0] << " ";
     cout << sData[i][1] << " ";
     cout << sData[i][2] << "\n";
   }
-
+  cout << "\n";
+*/
   std::vector<Job> finishedSJFList;
   std::vector<Job> SJList;
   Job *sIn;
@@ -138,15 +174,9 @@ void SJF(int data[][3], int size) {
       current = sIn->finish;
     }
     finishedSJFList.push_back(*sIn);
-    cout << "ID: " << sIn->id << endl;
-    cout << "Start: " << sIn->start << endl;
-    cout << "Finish: " << sIn->finish << endl;
-    cout << "Total Time: " << sIn->finish - sIn->start << endl;
-    cout << "Response Time: " << sIn->start - sIn->arrival << endl << endl;
-    
   }
 
-  //printResults(finishedSJFList);  
+  printResultsNP(finishedSJFList);  
 }
 
 void BJF(int data[][3], int size) {
@@ -157,6 +187,7 @@ void BJF(int data[][3], int size) {
   float temp = 0;
   float avg = 0;
   int start = 0;
+  int min;
   int max;
   int pos;
   int tempP;
@@ -173,13 +204,43 @@ void BJF(int data[][3], int size) {
   }
 
   for (i = 0; i < size; i++) {
-    max = bData[i][1];
-    pos = i;
+    min = bData[i][1];
 
     for (j = i + 1; j < size; j++) {
-      if (bData[j][1] < max && bData[j][2] > bData[pos][2]) {
-        max = bData[j][1];
-	pos = j;
+      
+      if (bData[j][1] < min) {
+        min = bData[j][1];
+
+	tempP = bData[i][0];
+	tempA = bData[i][1];
+	tempD = bData[i][2];
+	
+        bData[i][0] = bData[j][0];
+        bData[j][0] = tempP;
+	bData[i][1] = bData[j][1];
+	bData[j][1] = tempA;
+	bData[i][2] = bData[j][2];
+	bData[j][2] = tempD; 
+      }
+    } 
+  }
+/*
+  for (i = 0; i < size; i++) {
+    cout << bData[i][0] << " ";
+    cout << bData[i][1] << " ";
+    cout << bData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
+  for (i = 1; i < size; i++) {
+    max = bData[i][2];
+
+    for (j = i + 1; j < size; j++) {
+      if (completion == 0) {
+	completion = bData[i][1] + bData[i][2];
+      } 
+      if (bData[j][1] <= completion && bData[j][2] > bData[i][2]) {
+        max = bData[j][2];
 
 	tempP = bData[i][0];
 	tempA = bData[i][1];
@@ -193,10 +254,16 @@ void BJF(int data[][3], int size) {
 	bData[j][2] = tempD;
 	completion += bData[i][2]; 
       }
-    }
-     
+    } 
   }
-
+/*
+  for (i = 0; i < size; i++) {
+    cout << bData[i][0] << " ";
+    cout << bData[i][1] << " ";
+    cout << bData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
   std::vector<Job> finishedBJFList;
   std::vector<Job> BJList;
   Job *bIn;
@@ -216,7 +283,7 @@ void BJF(int data[][3], int size) {
 
   for(i = 0; i < size; i++) {
     Job *bIn = &BJList[i];
-    if (current == 0) {
+    if (bIn->arrival > current) {
       bIn->start = bIn->arrival;
       bIn->finish = bIn->start + bIn->duration;
       current = bIn->finish;
@@ -227,17 +294,10 @@ void BJF(int data[][3], int size) {
       current = bIn->finish;
     }
     finishedBJFList.push_back(*bIn);
-    cout << "ID: " << bIn->id << endl;
-    cout << "Start: " << bIn->start << endl;
-    cout << "Finish: " << bIn->finish << endl;
-    cout << "Total Time: " << bIn->finish - bIn->start << endl;
-    cout << "Response Time: " << bIn->start - bIn->arrival << endl << endl;
-    
   }
 
-  //printResults(finishedBJFList);
+  printResultsNP(finishedBJFList);
 }
-
 
 /*
 Note: STCF schedules every clock cycle, not when a job arrives.
@@ -363,11 +423,12 @@ int main()
   int j = 0;
   int size;
   ifstream in("jobs.dat");
+  //ifstream in("jobs.txt");
   std::string line;
   std::string temp;
   std::vector<Job> jobList;
 
-  while(std::getline(in, line))
+while(std::getline(in, line))
   {
       std::istringstream iss(line);
 
@@ -389,12 +450,11 @@ int main()
       data[i][0] = id;
       data[i][1] = arrival;
       data[i][2] = duration;
-
+      
       Job newJob(id, arrival, duration);
       jobList.push_back(newJob);
       i++;
   }
-
   std::sort(jobList.begin(), jobList.end(),arrivalCmp);
 
   FIFO(jobList, i);
