@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -20,13 +21,25 @@ void printResults(vector<Job> &list){
   }
 }
 
+void printResultsNP(vector<Job> &list){
+  //std::sort(list.begin(), list.end(), [](Job&lhs, Job&rhs){return lhs.id<rhs.id;});
+  std::cout << "id\tstart\tend\tTotal time\tResponse time\n";
+  for(auto i = list.begin(); i != list.end(); i++){
+    int total =  i->finish - i->start;
+    int response =  i->start - i->arrival;
+    printf("%d\t%d\t%d\t%d\t\t%d\n", i->id, i->start, i->finish, total, response);
+  }
+}
+
 void FIFO(std::vector<Job> readyQ, int size) {
   cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
   std::vector<Job> finishedList;
+  Job *in = &readyQ[0];
+  in->start = 1000;
   int i = 0;
   int current= 0;
 
-  for(int i = 0; i < size; i++){
+  for(i = 0; i < size; i++){
     Job *in = &readyQ[i];
     Job *temp = &finishedList[0];
     if(in->arrival > current){
@@ -39,16 +52,9 @@ void FIFO(std::vector<Job> readyQ, int size) {
       in->finish = in->start + in->duration;
       current = in->finish;
     }
-    finishedList.push_back(*in);
-    //cout << " Current: " << i << current << endl;
-    cout << "ID: " << in->id << endl;
-    cout << "Start: " << in->start << endl;
-    cout << "Finish: " << in->finish << endl;
-    cout << "Total Time: " << in->finish - in->start << endl;
-    cout << "Response Time: " << in->start - in->arrival << endl << endl;
-    
+    finishedList.push_back(*in); 
   }
-  //printResults(finishedList);
+  printResultsNP(finishedList);
 }
 
 void SJF(int data[][3], int size) {
@@ -59,69 +65,118 @@ void SJF(int data[][3], int size) {
   float temp = 0;
   float avg = 0;
   int start = 0;
-  int pos = 0;
+  int min;
+  int small;
+  int pos;
   int tempP;
   int tempA;
   int tempD;
   int sData[MAX][3];
   int i;
   int j;
+  
 
   for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
+    for (j = 0; j < 3; j++) {
       sData[i][j] = data[i][j];
     }  
   }
 
-  for (i = 0; i < size; i++) {
-    pos = i;
+    for (i = 0; i < size; i++) {
+    min = sData[i][1];
 
     for (j = i + 1; j < size; j++) {
-      if (sData[j][1] < completion && sData[j][2] < sData[pos][2]) {
-        pos = j;
-      }
-    }
-    tempP = sData[i][0];
-    tempA = sData[i][1];
-    tempD = sData[i][2];
       
-    sData[i][0] = sData[pos][0];
-    sData[pos][0] = tempP;
-    sData[i][1] = sData[pos][1];
-    sData[pos][1] = tempA;
-    sData[i][2] = sData[pos][2];
-    sData[pos][2] = tempD;
-    completion += sData[i][2];  
+      if (sData[j][1] < min) {
+        min = sData[j][1];
+
+	tempP = sData[i][0];
+	tempA = sData[i][1];
+	tempD = sData[i][2];
+	
+        sData[i][0] = sData[j][0];
+        sData[j][0] = tempP;
+	sData[i][1] = sData[j][1];
+	sData[j][1] = tempA;
+	sData[i][2] = sData[j][2];
+	sData[j][2] = tempD; 
+      }
+    } 
+  }
+/*
+  for (i = 0; i < size; i++) {
+    cout << sData[i][0] << " ";
+    cout << sData[i][1] << " ";
+    cout << sData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
+  for (i = 1; i < size; i++) {
+    small = sData[i][2];
+
+    for (j = i + 1; j < size; j++) {
+      if (completion == 0) {
+	completion = sData[i][1] + sData[i][2];
+      }
+      if (sData[j][1] <= completion && sData[j][2] < sData[i][2]) {
+        small = sData[j][2];
+
+	tempP = sData[i][0];
+	tempA = sData[i][1];
+	tempD = sData[i][2];
+	
+        sData[i][0] = sData[j][0];
+        sData[j][0] = tempP;
+	sData[i][1] = sData[j][1];
+	sData[j][1] = tempA;
+	sData[i][2] = sData[j][2];
+	sData[j][2] = tempD;
+	completion += sData[i][2]; 
+      }
+    } 
+  }
+/*
+  for (i = 0; i < size; i++) {
+    cout << sData[i][0] << " ";
+    cout << sData[i][1] << " ";
+    cout << sData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
+  std::vector<Job> finishedSJFList;
+  std::vector<Job> SJList;
+  Job *sIn;
+  int id       = 0;
+  int arrival  = 0;
+  int duration = 0;
+
+  for (i = 0; i < size; i++) {
+    id       = sData[i][0];
+    //cout << id << "\n";
+    arrival  = sData[i][1];
+    duration = sData[i][2];
+    Job sIn(id, arrival, duration);
+    SJList.push_back(sIn);
   }
 
-  completion = 0;
+  int current = 0;
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < 3; j++) {
-      cout << sData[i][j] << " ";
+  for(i = 0; i < size; i++) {
+    Job *sIn = &SJList[i];
+    if (sIn->arrival > current) {
+      sIn->start = sIn->arrival;
+      sIn->finish = sIn->start + sIn->duration;
+      current = sIn->finish;
     }
-    cout << endl;
-    //completion += data[i][2];
-    cout << "Job: " << sData[i][0] << endl;
-    start = sData[i][1];
-    if(start > completion){
-      cout << "Start Time: " << start << endl;
-      completion = start;
+    else if (sIn->arrival <= current) {
+      sIn->start = current;
+      sIn->finish = sIn->start + sIn->duration;
+      current = sIn->finish;
     }
-    else{
-      cout << "Start Time: " << completion << endl;
-      start = completion;
-    }
-    completion += sData[i][2];
-    //cout << "Completion time: " << completion << endl;
-    cout << "Finish Time: " << completion << endl;
-    turnaround = completion - sData[i][1];
-    cout << "Total Time Elapsed: " << turnaround << endl;
-    response = start - sData[i][1];
-    cout << "Response Time: " << response << endl << endl;
-    //cout << "Turnaround time: " << turnaround << endl;
-    temp += turnaround;
+    finishedSJFList.push_back(*sIn);
   }
+
+  printResultsNP(finishedSJFList);  
 }
 
 void BJF(int data[][3], int size) {
@@ -132,7 +187,9 @@ void BJF(int data[][3], int size) {
   float temp = 0;
   float avg = 0;
   int start = 0;
-  int pos = 0;
+  int min;
+  int max;
+  int pos;
   int tempP;
   int tempA;
   int tempD;
@@ -141,60 +198,105 @@ void BJF(int data[][3], int size) {
   int j;
 
   for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
+    for (j = 0; j < 3; j++) {
       bData[i][j] = data[i][j];
     }  
   }
 
   for (i = 0; i < size; i++) {
-    pos = i;
+    min = bData[i][1];
 
     for (j = i + 1; j < size; j++) {
-      if (bData[j][1] < completion && bData[j][2] > bData[pos][2]) {
-        pos = j;
-      }
-    }
-    tempP = bData[i][0];
-    tempA = bData[i][1];
-    tempD = bData[i][2];
       
-    bData[i][0] = bData[pos][0];
-    bData[pos][0] = tempP;
-    bData[i][1] = bData[pos][1];
-    bData[pos][1] = tempA;
-    bData[i][2] = bData[pos][2];
-    bData[pos][2] = tempD;
-    completion += bData[i][2];  
+      if (bData[j][1] < min) {
+        min = bData[j][1];
+
+	tempP = bData[i][0];
+	tempA = bData[i][1];
+	tempD = bData[i][2];
+	
+        bData[i][0] = bData[j][0];
+        bData[j][0] = tempP;
+	bData[i][1] = bData[j][1];
+	bData[j][1] = tempA;
+	bData[i][2] = bData[j][2];
+	bData[j][2] = tempD; 
+      }
+    } 
+  }
+/*
+  for (i = 0; i < size; i++) {
+    cout << bData[i][0] << " ";
+    cout << bData[i][1] << " ";
+    cout << bData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
+  for (i = 1; i < size; i++) {
+    max = bData[i][2];
+
+    for (j = i + 1; j < size; j++) {
+      if (completion == 0) {
+	completion = bData[i][1] + bData[i][2];
+      } 
+      if (bData[j][1] <= completion && bData[j][2] > bData[i][2]) {
+        max = bData[j][2];
+
+	tempP = bData[i][0];
+	tempA = bData[i][1];
+	tempD = bData[i][2];
+	
+        bData[i][0] = bData[j][0];
+        bData[j][0] = tempP;
+	bData[i][1] = bData[j][1];
+	bData[j][1] = tempA;
+	bData[i][2] = bData[j][2];
+	bData[j][2] = tempD;
+	completion += bData[i][2]; 
+      }
+    } 
+  }
+/*
+  for (i = 0; i < size; i++) {
+    cout << bData[i][0] << " ";
+    cout << bData[i][1] << " ";
+    cout << bData[i][2] << "\n";
+  }
+  cout << "\n";
+*/
+  std::vector<Job> finishedBJFList;
+  std::vector<Job> BJList;
+  Job *bIn;
+  int id       = 0;
+  int arrival  = 0;
+  int duration = 0;
+
+  for (i = 0; i < size; i++) {
+    id       = bData[i][0];
+    arrival  = bData[i][1];
+    duration = bData[i][2];
+    Job bIn(id, arrival, duration);
+    BJList.push_back(bIn);
   }
 
-  completion = 0;
+  int current = 0;
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < 3; j++) {
-      cout << bData[i][j] << " ";
+  for(i = 0; i < size; i++) {
+    Job *bIn = &BJList[i];
+    if (bIn->arrival > current) {
+      bIn->start = bIn->arrival;
+      bIn->finish = bIn->start + bIn->duration;
+      current = bIn->finish;
     }
-    cout << endl;
-    //completion += data[i][2];
-    start = bData[i][1];
-    cout << "Job: " << bData[i][0] << endl;
-    if(start > completion){
-      cout << "Start Time: " << start << endl;
-      completion = start;
+    else if (bIn->arrival <= current) {
+      bIn->start = current;
+      bIn->finish = bIn->start + bIn->duration;
+      current = bIn->finish;
     }
-    else{
-      cout << "Start Time: " << completion << endl;
-      start = completion;
-    }
-    completion += bData[i][2];
-    //cout << "Completion time: " << completion << endl;
-    cout << "Finish Time: " << completion << endl;
-    turnaround = completion - bData[i][1];
-    cout << "Total Time Elapsed: " << turnaround << endl;
-    response = start - bData[i][1];
-    cout << "Response Time: " << response << endl << endl;
-    //cout << "Turnaround time: " << turnaround << endl;
-    temp += turnaround;
+    finishedBJFList.push_back(*bIn);
   }
+
+  printResultsNP(finishedBJFList);
 }
 
 /*
@@ -321,11 +423,12 @@ int main()
   int j = 0;
   int size;
   ifstream in("jobs.dat");
+  //ifstream in("jobs.txt");
   std::string line;
   std::string temp;
   std::vector<Job> jobList;
 
-  while(std::getline(in, line))
+while(std::getline(in, line))
   {
       std::istringstream iss(line);
 
@@ -352,7 +455,6 @@ int main()
       jobList.push_back(newJob);
       i++;
   }
-
   std::sort(jobList.begin(), jobList.end(),arrivalCmp);
 
   FIFO(jobList, i);
