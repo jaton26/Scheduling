@@ -65,9 +65,12 @@ void SJF(int data[][3], int size) {
   int sData[MAX][3];
   int i;
   int j;
+  std::vector<Job> sortedList;
+  std::vector<Job> SJList;
+  int current = 0;
 
   for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
+    for (j = 0; j < 3; j++) {
       sData[i][j] = data[i][j];
     }  
   }
@@ -93,34 +96,49 @@ void SJF(int data[][3], int size) {
     completion += sData[i][2];  
   }
 
-  completion = 0;
+  cout << "Storing Data in sData into a vector \n";
 
-  for (int i = 0; i < size; i++) {
-    for (int j = 0; j < 3; j++) {
-      cout << sData[i][j] << " ";
-    }
-    cout << endl;
-    //completion += data[i][2];
-    cout << "Job: " << sData[i][0] << endl;
-    start = sData[i][1];
-    if(start > completion){
-      cout << "Start Time: " << start << endl;
-      completion = start;
-    }
-    else{
-      cout << "Start Time: " << completion << endl;
-      start = completion;
-    }
-    completion += sData[i][2];
-    //cout << "Completion time: " << completion << endl;
-    cout << "Finish Time: " << completion << endl;
-    turnaround = completion - sData[i][1];
-    cout << "Total Time Elapsed: " << turnaround << endl;
-    response = start - sData[i][1];
-    cout << "Response Time: " << response << endl << endl;
-    //cout << "Turnaround time: " << turnaround << endl;
-    temp += turnaround;
+  for (i = 0; i < size; i++) {
+    Job *sIn;
+    sIn->id = sData[i][0];
+    sIn->arrival = sData[i][1];
+    sIn->duration = sData[i][2];
+
+    sortedList.push_back(*sIn);
   }
+    
+  for (j = 0; j < size; j++) {
+    Job *s = &sortedList[j];
+    cout << s->id << " ";
+    cout << s->arrival << " ";
+    cout << s->duration << " ";
+    cout << "\n";
+    }
+
+  cout << "Calculating \n";
+
+  for(i = 0; i < size; i++) {
+    Job *sIn = &sortedList[i];
+    Job *temp = &SJList[0];
+    if (sIn->arrival > current) {
+      sIn->start = sIn->arrival;
+      sIn->finish = sIn->start + sIn->duration;
+      current = sIn->finish;
+    }
+    else if (sIn->arrival <= current) {
+      sIn->start = current;
+      sIn->finish = sIn->start + sIn->duration;
+      current = sIn->finish;
+    }
+    SJList.push_back(*sIn);
+    cout << "ID: " << sIn->id << endl;
+    cout << "Start: " << sIn->start << endl;
+    cout << "Finish: " << sIn->finish << endl;
+    
+  }
+
+  cout << "Done Calculating \n";
+  printResults(SJList);  
 }
 
 void BJF(int data[][3], int size) {
@@ -140,7 +158,7 @@ void BJF(int data[][3], int size) {
   int j;
 
   for (i = 0; i < size; i++) {
-    for (j = 0; j < size; j++) {
+    for (j = 0; j < 3; j++) {
       bData[i][j] = data[i][j];
     }  
   }
@@ -173,7 +191,7 @@ void BJF(int data[][3], int size) {
       cout << bData[i][j] << " ";
     }
     cout << endl;
-    //completion += data[i][2];
+    completion += data[i][2];
     start = bData[i][1];
     cout << "Job: " << bData[i][0] << endl;
     if(start > completion){
@@ -329,12 +347,12 @@ int main()
       std::istringstream iss(line);
 
       // Parse each line using the input string stream
-      // j = 0;
-      // while(std::getline(iss,temp,' '))
-      // {
-      //    data[i][j] = std::stoi(temp);
-      //    j++;
-      // }
+       j = 0;
+       while(std::getline(iss,temp,' '))
+       {
+          data[i][j] = std::stoi(temp);
+          j++;
+       }
       
       std::getline(iss,temp,' ');
       int id = std::stoi(temp);
@@ -352,10 +370,10 @@ int main()
 
   FIFO(jobList, i);
   SJF(data, i);
-  BJF(data, i);
+  //BJF(data, i);
 
   STCF(jobList);
   RR(jobList);
 
   return 0;
-}＋棒＋棒＋棒＋棒＋棒＋棒＋棒＋棒＋棒＋棒＋棒＋某ﴋ咩촉ᄣ⨂
+}
