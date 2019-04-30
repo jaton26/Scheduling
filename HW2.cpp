@@ -23,8 +23,6 @@ void printResults(vector<Job> &list){
 void FIFO(std::vector<Job> readyQ, int size) {
   cout << "++++++++++++++++++++ FIFO ++++++++++++++++++++" << endl;
   std::vector<Job> finishedList;
-  Job *in = &readyQ[0];
-  in->start = 1000;
   int i = 0;
   int current= 0;
 
@@ -42,12 +40,15 @@ void FIFO(std::vector<Job> readyQ, int size) {
       current = in->finish;
     }
     finishedList.push_back(*in);
-    //cout << "ID: " << in->id << endl;
-    //cout << "Start: " << in->start << endl;
-    //cout << "Finish: " << in->finish << endl;
+    //cout << " Current: " << i << current << endl;
+    cout << "ID: " << in->id << endl;
+    cout << "Start: " << in->start << endl;
+    cout << "Finish: " << in->finish << endl;
+    cout << "Total Time: " << in->finish - in->start << endl;
+    cout << "Response Time: " << in->start - in->arrival << endl << endl;
     
   }
-  printResults(finishedList);
+  //printResults(finishedList);
 }
 
 void SJF(int data[][3], int size) {
