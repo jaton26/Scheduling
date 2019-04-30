@@ -42,9 +42,11 @@ void FIFO(std::vector<Job> readyQ, int size) {
       current = in->finish;
     }
     finishedList.push_back(*in);
-    //cout << "ID: " << in->id << endl;
-    //cout << "Start: " << in->start << endl;
-    //cout << "Finish: " << in->finish << endl;
+    cout << "ID: " << in->id << endl;
+    cout << "Start: " << in->start << endl;
+    cout << "Finish: " << in->finish << endl;
+    cout << "Total Time: " << in->finish - in->start << endl;
+    cout << "Response Time: " << in->start - in->arrival << endl << endl;
     
   }
   printResults(finishedList);
@@ -96,6 +98,12 @@ void SJF(int data[][3], int size) {
      
   }
 
+  for (i = 0; i < size; i++) {
+    cout << sData[i][0] << " ";
+    cout << sData[i][1] << " ";
+    cout << sData[i][2] << "\n";
+  }
+
   std::vector<Job> finishedSJFList;
   std::vector<Job> SJList;
   Job *sIn;
@@ -127,13 +135,15 @@ void SJF(int data[][3], int size) {
       current = sIn->finish;
     }
     finishedSJFList.push_back(*sIn);
-    //cout << "ID: " << sIn->id << endl;
-    //cout << "Start: " << sIn->start << endl;
-    //cout << "Finish: " << sIn->finish << endl;
+    cout << "ID: " << sIn->id << endl;
+    cout << "Start: " << sIn->start << endl;
+    cout << "Finish: " << sIn->finish << endl;
+    cout << "Total Time: " << sIn->finish - sIn->start << endl;
+    cout << "Response Time: " << sIn->start - sIn->arrival << endl << endl;
     
   }
 
-  printResults(finishedSJFList);  
+  //printResults(finishedSJFList);  
 }
 
 void BJF(int data[][3], int size) {
@@ -211,13 +221,15 @@ void BJF(int data[][3], int size) {
       current = bIn->finish;
     }
     finishedBJFList.push_back(*bIn);
-    //cout << "ID: " << sIn->id << endl;
-    //cout << "Start: " << sIn->start << endl;
-    //cout << "Finish: " << sIn->finish << endl;
+    cout << "ID: " << bIn->id << endl;
+    cout << "Start: " << bIn->start << endl;
+    cout << "Finish: " << bIn->finish << endl;
+    cout << "Total Time: " << bIn->finish - bIn->start << endl;
+    cout << "Response Time: " << bIn->start - bIn->arrival << endl << endl;
     
   }
 
-  printResults(finishedBJFList);
+  //printResults(finishedBJFList);
 }
 
 /*
