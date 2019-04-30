@@ -343,6 +343,10 @@ int main()
       std::getline(iss,temp,' ');
       int duration = std::stoi(temp);
       
+      data[i][0] = id;
+      data[i][1] = arrival;
+      data[i][2] = duration;
+      
       Job newJob(id, arrival, duration);
       jobList.push_back(newJob);
       i++;
